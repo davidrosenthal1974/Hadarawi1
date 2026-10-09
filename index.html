@@ -24,4 +24,139 @@
   .hidden { display: none !important; }
   .win { animation: fadeIn 0.8s ease; }
   @keyframes pop { 50% { transform: scale(1.15); } }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>משחק 1: זהי את המילה</h1>
+  <div class="subtitle">שלוש אותיות, חמישה רמזים. קדימה, לעבודה!</div>
+
+  <div id="game-section">
+    <div class="grid">
+      <div class="tile" id="t0">?</div>
+      <div class="tile" id="t1">?</div>
+      <div class="tile" id="t2">?</div>
+    </div>
+
+    <input type="text" id="guessInput" placeholder="הקלידי מילה בת 3 אותיות" maxlength="10">
+    <br>
+    <button type="button" class="btn-submit" id="submitBtn">שלחי ניחוש</button>
+    <div id="feedback"></div>
+
+    <div id="cluesList" class="clues-list"></div>
+    <button type="button" class="btn-clue" id="clueBtn">אני תקועה, תן רמז 💡</button>
+    <div id="noMoreClues" style="font-size: 0.85rem; color: #888; margin-top: 12px; display: none;">זהו, אין יותר רמזים! צ'ופ צ'ופ, לפצח!</div>
+  </div>
+
+  <div id="win-section" class="hidden win">
+    <div style="font-size: 3.2rem; margin: 10px 0;">🎉 🇯🇵 🎁</div>
+    <h2 style="color: #40c057; font-size: 1.8rem; margin: 10px 0;">בינגו! פתרת!</h2>
+    <p style="font-size: 1.15rem; line-height: 1.6;">
+      <strong>המתנה הראשונה פוצחה בהצלחה!</strong><br><br>
+      גשי מיד ל<strong>דודאווי</strong> ודרשי לקבל אותה!
+    </p>
+  </div>
+</div>
+
+<script>
+  var clues = [
+    "📍 <strong>רמז 1:</strong> מדינה",
+    "🌍 <strong>רמז 2:</strong> לא באירופה",
+    "🍜 <strong>רמז 3:</strong> תחשבי אוכל",
+    "❤️ <strong>רמז 4:</strong> תחשבי אוכל שאת מאוד אוהבת",
+    "🥢 <strong>רמז 5:</strong> צ'ופסטיקס"
+  ];
+  var currentClue = 0;
+
+  var wrongMessages = [
+    "לא מדויק... נסי שוב, צ'ופ צ'ופ!",
+    "ממש לא בכיוון, המוח שלך עדיין בניוטרל!",
+    "קר... קר מאוד... קפוא!",
+    "יפה שניסית, אבל לא.",
+    "פחחח, אפילו לא קרוב!",
+    "לא לא לא. להפעיל את הגלגלים במוח!",
+    "איפה את ואיפה התשובה הנכונה...",
+    "רחוקה כמו גבעתיים מטוקיו!",
+    "ניסיון חמוד, אבל התשובה היא לא.",
+    "אל תמציאי מילים, תתרכזי!",
+    "את מסוגלת ליותר מזה, מבטיח!",
+    "לא בכיוון בכלל... אולי תבקשי רמז?",
+    "טעות! עוד ניחוש כזה ואני לוקח את המתנה חזרה 😉",
+    "שלילי חזק. תנשמי עמוק ונסי שוב!"
+  ];
+  var lastMsgIndex = -1;
+
+  function getRandomWrongMessage() {
+    var idx;
+    do {
+      idx = Math.floor(Math.random() * wrongMessages.length);
+    } while (idx === lastMsgIndex && wrongMessages.length > 1);
+    lastMsgIndex = idx;
+    return wrongMessages[idx];
+  }
+
+  function checkAnswer() {
+    var input = document.getElementById('guessInput');
+    var val = input.value.trim();
+    var fb = document.getElementById('feedback');
+
+    if (!val) {
+      fb.textContent = "קודם תקלידי משהו!";
+      return;
+    }
+
+    if (val === "יפן" || val.indexOf("יפן") !== -1) {
+      document.getElementById('t0').textContent = "י";
+      document.getElementById('t1').textContent = "פ";
+      document.getElementById('t2').textContent = "ן";
+      
+      var tiles = document.querySelectorAll('.tile');
+      for (var i = 0; i < tiles.length; i++) {
+        tiles[i].classList.add('correct');
+      }
+
+      fb.textContent = "";
+
+      setTimeout(function() {
+        document.getElementById('game-section').classList.add('hidden');
+        document.getElementById('win-section').classList.remove('hidden');
+      }, 500);
+    } else {
+      fb.textContent = getRandomWrongMessage();
+      input.value = "";
+      input.focus();
+    }
+  }
+
+  function showNextClue() {
+    if (currentClue < clues.length) {
+      var box = document.getElementById('cluesList');
+      box.style.display = 'block';
+
+      var item = document.createElement('div');
+      item.className = 'clue-item';
+      item.innerHTML = clues[currentClue];
+      box.appendChild(item);
+
+      currentClue++;
+
+      if (currentClue >= clues.length) {
+        document.getElementById('clueBtn').style.display = 'none';
+        document.getElementById('noMoreClues').style.display = 'block';
+      }
+    }
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', checkAnswer);
+  document.getElementById('clueBtn').addEventListener('click', showNextClue);
+
+  document.getElementById('guessInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      checkAnswer();
+    }
+  });
+</script>
+</body>
+</html>
