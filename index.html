@@ -3,131 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>חידה 1 - יום הולדת שמח הדראווי!</title>
+<title>משחק 1: זהי את המילה</title>
 <style>
   body { font-family: system-ui, -apple-system, sans-serif; background: #fff5f7; color: #333; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; text-align: center; }
-  .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(255,182,193,0.3); max-width: 420px; width: 100%; box-sizing: border-box; }
-  h1 { color: #d63384; font-size: 1.5rem; margin-bottom: 8px; }
-  .dedication { background: #fff0f3; padding: 15px; border-radius: 12px; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; border-right: 4px solid #ff4d6d; text-align: right; }
-  .rule { font-size: 1rem; color: #444; margin-bottom: 15px; font-weight: 600; line-height: 1.4; }
+  .card { background: white; padding: 30px 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(255,182,193,0.3); max-width: 420px; width: 100%; box-sizing: border-box; }
+  h1 { color: #d63384; font-size: 1.6rem; margin-top: 0; margin-bottom: 10px; }
+  .subtitle { font-size: 1.05rem; color: #555; margin-bottom: 25px; font-weight: 500; line-height: 1.5; }
   .grid { display: flex; justify-content: center; gap: 10px; margin: 20px 0; direction: ltr; }
   .tile { width: 52px; height: 52px; border: 2px solid #ddd; border-radius: 10px; font-size: 1.6rem; font-weight: bold; display: flex; align-items: center; justify-content: center; background: #fafafa; }
   .tile.correct { background: #40c057; border-color: #40c057; color: white; animation: pop 0.3s ease; }
-  input[type="text"] { width: 80%; padding: 12px; font-size: 1.15rem; border: 2px solid #ffccd5; border-radius: 10px; text-align: center; outline: none; margin-bottom: 12px; box-sizing: border-box; }
+  input[type="text"] { width: 85%; padding: 12px; font-size: 1.15rem; border: 2px solid #ffccd5; border-radius: 10px; text-align: center; outline: none; margin-bottom: 15px; box-sizing: border-box; }
+  input[type="text"]:focus { border-color: #ff4d6d; }
   .btn-submit { background: #ff4d6d; color: white; border: none; padding: 12px 32px; font-size: 1.1rem; font-weight: bold; border-radius: 10px; cursor: pointer; transition: 0.2s; touch-action: manipulation; }
   .btn-submit:active { background: #c9184a; }
-  .btn-clue { background: transparent; color: #d63384; border: 1.5px solid #d63384; padding: 8px 18px; font-size: 0.9rem; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 15px; display: inline-block; }
+  .btn-clue { background: transparent; color: #d63384; border: 1.5px solid #d63384; padding: 9px 20px; font-size: 0.92rem; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 18px; display: inline-block; }
   .btn-clue:active { background: #fff0f3; }
-  .clues-list { text-align: right; background: #fdf2f4; padding: 12px 18px; border-radius: 12px; font-size: 0.92rem; margin-top: 15px; display: none; }
+  .clues-list { text-align: right; background: #fdf2f4; padding: 14px 18px; border-radius: 12px; font-size: 0.95rem; margin-top: 16px; display: none; line-height: 1.6; }
   .clue-item { margin: 6px 0; animation: fadeIn 0.4s ease; }
+  #feedback { margin-top: 12px; font-size: 0.95rem; font-weight: bold; color: #ff4d6d; min-height: 24px; }
   .hidden { display: none !important; }
   .win { animation: fadeIn 0.8s ease; }
   @keyframes pop { 50% { transform: scale(1.15); } }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-</style>
-</head>
-<body>
-
-<div class="card">
-  <h1>שלב 1: החימום 🌸</h1>
-  <div class="dedication">
-    <strong>האהבה הגדולה שלי,</strong><br>
-    יום ההולדת הזה לא יהיה ככל יום הולדת. הוא יהיה קשה, מסובך ומעיק. למה? כי יש לך חידות לפתור. צ'ופ צ'ופ, לעבודה, אין זמן.<br>
-    <div style="text-align: left; margin-top: 5px;"><em>- דודאווי</em></div>
-  </div>
-
-  <div id="game-section">
-    <div class="rule">פצחי את מילת המפתח (3 אותיות בלבד) שתחשוף מאיפה הגיעה המתנה הראשונה:</div>
-
-    <div class="grid">
-      <div class="tile" id="t0">?</div>
-      <div class="tile" id="t1">?</div>
-      <div class="tile" id="t2">?</div>
-    </div>
-
-    <input type="text" id="guessInput" placeholder="הקלידי מילה בת 3 אותיות" maxlength="10">
-    <br>
-    <button type="button" class="btn-submit" id="submitBtn">שלחי ניחוש</button>
-    <div id="feedback" style="margin-top: 10px; font-size: 0.92rem; font-weight: bold; color: #ff4d6d; min-height: 20px;"></div>
-
-    <div id="cluesList" class="clues-list"></div>
-    <button type="button" class="btn-clue" id="clueBtn">אני תקועה, תן רמז 💡</button>
-    <div id="noMoreClues" style="font-size: 0.85rem; color: #888; margin-top: 10px; display: none;">זהו, אין יותר רמזים! צ'ופ צ'ופ, לפצח!</div>
-  </div>
-
-  <div id="win-section" class="hidden win">
-    <div style="font-size: 3rem; margin: 10px 0;">🎉 🇯🇵 🎁</div>
-    <h2 style="color: #40c057; font-size: 1.8rem; margin: 10px 0;">בינגו! פתרת!</h2>
-    <p style="font-size: 1.15rem; line-height: 1.6;">
-      <strong>המתנה הראשונה פוצחה בהצלחה!</strong><br><br>
-      גשי מיד ל<strong>דודאווי</strong> ודרשי לקבל אותה!
-    </p>
-  </div>
-</div>
-
-<script>
-  var clues = [
-    "📍 <strong>רמז 1:</strong> מדינה",
-    "🌍 <strong>רמז 2:</strong> לא באירופה",
-    "🍜 <strong>רמז 3:</strong> תחשבי אוכל",
-    "❤️ <strong>רמז 4:</strong> תחשבי אוכל שאת מאוד אוהבת",
-    "🥢 <strong>רמז 5:</strong> צ'ופסטיקס"
-  ];
-  var currentClue = 0;
-
-  function checkAnswer() {
-    var input = document.getElementById('guessInput');
-    var val = input.value.trim();
-    var fb = document.getElementById('feedback');
-
-    if (val === "יפן" || val.indexOf("יפן") !== -1) {
-      document.getElementById('t0').textContent = "י";
-      document.getElementById('t1').textContent = "פ";
-      document.getElementById('t2').textContent = "ן";
-      
-      var tiles = document.querySelectorAll('.tile');
-      for (var i = 0; i < tiles.length; i++) {
-        tiles[i].classList.add('correct');
-      }
-
-      fb.textContent = "";
-
-      setTimeout(function() {
-        document.getElementById('game-section').classList.add('hidden');
-        document.getElementById('win-section').classList.remove('hidden');
-      }, 500);
-    } else {
-      fb.textContent = "לא מדויק... נסי שוב! צ'ופ צ'ופ!";
-    }
-  }
-
-  function showNextClue() {
-    if (currentClue < clues.length) {
-      var box = document.getElementById('cluesList');
-      box.style.display = 'block';
-
-      var item = document.createElement('div');
-      item.className = 'clue-item';
-      item.innerHTML = clues[currentClue];
-      box.appendChild(item);
-
-      currentClue++;
-
-      if (currentClue >= clues.length) {
-        document.getElementById('clueBtn').style.display = 'none';
-        document.getElementById('noMoreClues').style.display = 'block';
-      }
-    }
-  }
-
-  document.getElementById('submitBtn').addEventListener('click', checkAnswer);
-  document.getElementById('clueBtn').addEventListener('click', showNextClue);
-
-  document.getElementById('guessInput').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
-      checkAnswer();
-    }
-  });
-</script>
-</body>
-</html>
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to
